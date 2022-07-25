@@ -663,6 +663,7 @@ function narrate()
   --end
 end
 
+--firsttimes={}
 function highlight(info)
   -- play of the games :)
   local out=true
@@ -672,11 +673,19 @@ function highlight(info)
     if cntx=='hotspot resolve' then
       -- if is first occurence in pmem and..
 						local narrator_say ={fmt('On this run, you first learned to %s here.',verb)}
+						for i=#tracker,1,-1 do
+								local tr=tracker[i]
+								if tr.verb and tr.verb[1]==verb then
+										rem(tracker,i)
+								end
+						end
 						if #tracker==0 then ins(narrator_say,'See you again tomorrow. The forest will still be here.') end
       inform_multi(narrator_say)
       --if verb=='Pick up' then
         ins(pg_screens, {verb=verb})
         ins(pg_screens, {place=info.place})
+        
+        --ins(firsttimes,info.verb[1])
         return out
       --end 
     end
@@ -805,13 +814,6 @@ function titlemusic()
 		--sfx(1,flr(12*5-(t%120)/20),6,1,0x2+((t-20)%120)/20)
 		end
 		end
-end
-
---populate dropped loot from last try
-for i=1,12 do
-		if pmem(100+i-1) ==0 then break end
-		spawn(pmem(111+1), pmem(111+2), pmem(100+i-1))
-		pmem(100+i-1, 0)
 end
 
 -- verb has been chosen
@@ -1992,6 +1994,14 @@ function lorespam(postlore)
  end
 
 end
+
+--populate dropped loot from last try
+for i=1,12 do
+		if pmem(100+i-1) ==0 then break end
+		spawn(pmem(111+1), pmem(111+2), pmem(100+i-1))
+		pmem(100+i-1, 0)
+end
+
 
 -- breathe. %)
 -- my lua implementation of Perlin noise
