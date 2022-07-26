@@ -192,21 +192,169 @@ function breathe4()
 		local freq=.88---t*.02
 		for w=0,32-1,1 do
 				freq=.88*.75--+1.5+sin(t*.001)
-				cur_smp=6+(perlin((w+t)*.2*freq,12*9282+(w+t)*.245*freq,12*771+(w+t)*.1*freq)-.5)*6
+				cur_smp=6+(perlin((w+mt)*.2*freq,12*9282+(w+mt)*.245*freq,12*771+(w+mt)*.1*freq)-.5)*6
 				freq=.407
-				cur_smp=cur_smp+(perlin((w+t*.3)*.42*freq,12*92482+(w+t)*.245*freq,12*7471+(w+t)*.1*freq))*7
+				cur_smp=cur_smp+(perlin((w+mt*.3)*.42*freq,12*92482+(w+mt)*.245*freq,12*7471+(w+mt)*.1*freq))*7
 				cur_smp=flr(cur_smp)%16
 				local addr=0xffe4*2 +2*32 +w
 				poke4(addr, cur_smp)
 		end
 		
-		if t%(120)==0 then
+		if mt%(120)==0 then
 				sfx(2,
-				    -1+12*3+t%12-t%16,
+				    -1+12*3+mt%12-mt%16,
 								120+1,
 								2,
 								0x8,
 								0)
+		end
+end
+
+function breathe7()
+		local freq=.88---t*.02
+		for w=0,32-1,1 do
+				freq=.88*.75--+1.5+sin(t*.001)
+				cur_smp=6+(perlin((w+mt)*.2*freq,12*9282+(w+mt)*.245*freq,12*771+(w+mt)*.1*freq)-.5)*6
+				freq=.407
+				cur_smp=cur_smp+(perlin((w+mt*.3)*.42*freq,12*92482+(w+mt)*.245*freq,12*7471+(w+mt)*.1*freq))*7
+				cur_smp=flr(cur_smp)%16
+				local addr=0xffe4*2 +2*32 +w
+				poke4(addr, cur_smp)
+		end
+		
+		if mt%(40)==0 then
+				sfx(2,
+				    -1+3+12*3+mt%12-mt%16,
+								20+1,
+								2,
+								0x8,
+								0)
+		end
+end
+
+function breathe8()
+		local freq=.88---t*.02
+		for w=0,32-1,1 do
+				freq=.88*.75--+1.5+sin(t*.001)
+				cur_smp=6+(perlin((w+mt)*.2*freq,12*9282+(w+mt)*.245*freq,12*771+(w+mt)*.1*freq)-.5)*6
+				freq=.407
+				cur_smp=cur_smp+(perlin((w+mt*.3)*.42*freq,12*92482+(w+mt)*.245*freq,12*7471+(w+mt)*.1*freq))*7
+				cur_smp=flr(cur_smp)%16
+				local addr=0xffe4*2 +2*32 +w
+				poke4(addr, cur_smp)
+		end
+		
+		if mt%(13)==0 then
+				sfx(2,
+				    -4+12*3+mt%12+mt%8-mt%16,
+								13+1,
+								2,
+								0x8,
+								0)
+		end
+end
+
+function breathe9()
+		local freq=.88---t*.02
+		for w=0,32-1,1 do
+				freq=.88*.75--+1.5+sin(t*.001)
+				cur_smp=6+(perlin((w+mt)*.2*freq,12*9282+(w+mt)*.245*freq,12*771+(w+mt)*.1*freq)-.5)*6
+				freq=.407
+				cur_smp=cur_smp+(perlin((w+mt*.3)*.42*freq,12*92482+(w+mt)*.245*freq,12*7471+(w+mt)*.1*freq))*7
+				cur_smp=flr(cur_smp)%16
+				local addr=0xffe4*2 +2*32 +w
+				poke4(addr, cur_smp)
+		end
+		
+		if mt%(130)==0 then
+				sfx(2,
+				    -4+12*3+mt%13+mt%8-mt%16,
+								130+1,
+								2,
+								0x8,
+								0)
+		end
+		if mt%(13)==0 then
+				sfx(2,
+				    -4+12*3+mt%13+mt%8-mt%16,
+								6+1,
+								3,
+								0x8,
+								0)
+		end
+end
+
+function breathe10()
+		local freq=.88---t*.02
+		for w=0,32-1,1 do
+				freq=.88*.75--+1.5+sin(t*.001)
+				cur_smp=6+(perlin((w+mt)*.2*freq,12*9282+(w+mt)*.245*freq,12*771+(w+mt)*.1*freq)-.5)*6
+				freq=.407
+				cur_smp=cur_smp+(perlin((w+mt*.3)*.42*freq,12*92482+(w+mt)*.245*freq,12*7471+(w+mt)*.1*freq))*7
+				cur_smp=flr(cur_smp)%16
+				local addr=0xffe4*2 +2*32 +w
+				poke4(addr, cur_smp)
+		end
+		
+		if mt%(5)==0 then
+				sfx(2,
+				    -4+12*5+mt%13+mt%8-mt%16,
+								5+1,
+								3,
+								0x8,
+								0)
+		end
+end
+
+function breathe11()
+		local freq=.88---t*.02
+		for w=0,32-1,1 do
+				freq=.88*.75--+1.5+sin(t*.001)
+				cur_smp=6+(perlin((w+mt)*.2*freq,12*9282+(w+mt)*.245*freq,12*771+(w+mt)*.1*freq)-.5)*6
+				freq=.407
+				cur_smp=cur_smp+(perlin((w+mt*.3)*.42*freq,12*92482+(w+mt)*.245*freq,12*7471+(w+mt)*.1*freq))*7
+				cur_smp=flr(cur_smp)%16
+				local addr=0xffe4*2 +2*32 +w
+				poke4(addr, cur_smp)
+		end
+		
+		if mt%(55)==0 then
+				sfx(2,
+				    -5+12*2+mt%13+mt%8-mt%14,
+								55+1,
+								3,
+								0x8,
+								0)
+		end
+end
+
+function breathe12()
+		local freq=.88---t*.02
+		for w=0,32-1,1 do
+				freq=.88*.75--+1.5+sin(t*.001)
+				cur_smp=6+(perlin((w+mt)*.2*freq,12*9282+(w+mt)*.245*freq,12*771+(w+mt)*.1*freq)-.5)*6
+				freq=.407
+				cur_smp=cur_smp+(perlin((w+mt*.3)*.42*freq,12*92482+(w+mt)*.245*freq,12*7471+(w+mt)*.1*freq))*7
+				cur_smp=flr(cur_smp)%16
+				local addr=0xffe4*2 +2*32 +w
+				poke4(addr, cur_smp)
+		end
+		
+		if mt%(155)==0 then
+				sfx(2,
+				    -5+12*3+mt%13+mt%8-mt%14,
+								155+1,
+								2,
+								0x8,
+								0)
+		end
+		if mt%(66)==0 then
+				sfx(2,
+				    -5+12*4+mt%13+mt%8-mt%14,
+								55+1,
+								3,
+								0x8,
+								0)		
 		end
 end
 
@@ -224,17 +372,17 @@ function breathen(dur,upv,dnv)
 				local freq=.88---t*.02
 				for w=0,32-1,1 do
 						freq=.88*.75--+1.5+sin(t*.001)
-						cur_smp=6+(perlin((w+t)*.2*freq,12*9282+(w+t)*.245*freq,12*771+(w+t)*.1*freq)-.5)*6
+						cur_smp=6+(perlin((w+mt)*.2*freq,12*9282+(w+mt)*.245*freq,12*771+(w+mt)*.1*freq)-.5)*6
 						freq=.407
-						cur_smp=cur_smp+(perlin((w+t*.3)*.42*freq,12*92482+(w+t)*.245*freq,12*7471+(w+t)*.1*freq))*7
+						cur_smp=cur_smp+(perlin((w+mt*.3)*.42*freq,12*92482+(w+mt)*.245*freq,12*7471+(w+mt)*.1*freq))*7
 						cur_smp=flr(cur_smp)%16
 						local addr=0xffe4*2 +2*32 +w
 						poke4(addr, cur_smp)
 				end
 				
-				if t%(dur)==0 then
+				if mt%(dur)==0 then
 						sfx(2,
-						    -1+12*3+t%upv-t%dnv,
+						    -1+12*3+mt%upv-mt%dnv,
 										dur+1,
 										2,
 										0x8,
@@ -280,8 +428,8 @@ function yesplacefgm()
 		end
 end
 
-
-local brth=breathen(63,30,28)--breathen(10,20,16)--breathen(31,44,55)--breathen(44,16,40)
+breathe5=breathen(10,20,16)
+breathe6=breathen(63,30,28)--breathen(10,20,16)--breathen(31,44,55)--breathen(44,16,40)
 
 function titlescr()
 	-- audio layer %)
@@ -369,7 +517,7 @@ function titlescr()
  for k=1,65 do
 	if keyp(k) then 
 			if t<360-1 then t=360-1
-			else t=0; TIC=gameon; shutup() end 
+			else t=0; mt=0; shutup(); TIC=gameon; shutup() end 
 	end end end
 	
 	--viewmusic()
@@ -445,6 +593,9 @@ function gameon()
    			   --lastverb=cur(verbs)
        local action= select_verb[cur(verbs)]
        if action then action() 
+       track({verb={cur(verbs),'hotspot resolve'},
+              place={x=place.x,y=place.y},
+             })
        else trace(fmt('undefined verb selection %s',cur(verbs))) end 
    		end
 	end
@@ -520,7 +671,7 @@ function gameon()
 			for my=0,12-1 do
 				for mx=0,12-1 do
 					sp = mget(place.x+mx, place.y+12+my)
-					ck=0; if sp ==69 or sp ==70 or sp ==85 or sp ==86 or sp ==41 then ck=14 end
+					ck=0; if sp ==69 or sp ==70 or sp ==85 or sp ==86 or sp ==41+16 then ck=14 end
 					spr(sp,8+mx*8,8+my*8,ck)
 				end
 			end
@@ -594,7 +745,7 @@ function gameon()
 				borders(tx+8*10-8,0,8*6,8+12*8+8,8)
 			--inventory items
 			for i,item in ipairs(inventory) do
-				ck=0; if item.id ==69 or item.id ==41 then ck=14 end
+				ck=0; if item.id ==69 or item.id ==41+16 then ck=14 end
 				spr(item.id,ix,iy,ck,1,0,0,item.w,item.h)
 				if focus ==inventory and i ==inventory.i then
 					surround(ix/8-1,iy/8-1,item.w,item.h)
@@ -635,7 +786,36 @@ function gameon()
 			end
 	end
 	
+	if place.x==0 and place.y==0 then
+	breathe4()
+	end
+	if place.x==228 and place.y==0 then
+	breathe6()
+	end
+	if place.x==228-12 and place.y==0 then
+	breathe5()
+	end
+	if place.x==192 and place.y==0 then
+	breathe7()
+	end
+	if place.x==12 and place.y==0 then
+	breathe8()
+	end
+	if place.x==24 and place.y==0 then
+	breathe9()
+	end
+	if place.x==0 and place.y==24 then
+	breathe10()
+	end
+	if place.x==24 and place.y==24 then
+	breathe11()
+	end
+	if place.x==48 and place.y==112 then
+	breathe12()
+	end
+	
 	t=t+1
+	mt=mt+1
 end
 
 -- narrator gonna narrate.
@@ -923,7 +1103,13 @@ hotspot_verb_resolve ={
     end
 
     if hspot.id==115 then
+    		if not flags['sh'] then
     		inform_multi({'"With great power..."'})
+      flags['sh']=true
+      elseif not flags['sh2'] then
+    		inform_multi({'"...comes great responsibility."'})
+      flags['sh2']=true
+      end
     end
     
     if not ignore_pickup then    
@@ -942,6 +1128,8 @@ hotspot_verb_resolve ={
     place.x=hspot.nextx; place.y=hspot.nexty
     inform_once("Arrived to a new place.")
     fed=false
+    mt=0
+				shutup()
     --complex function that can result in 'Windows.. NOW!'
     resolve_plants()        
     sustain("Move",-1)  
@@ -970,6 +1158,8 @@ hotspot_verb_resolve ={
       end
       fed=false
       --complex function that can result in 'Windows.. NOW!'
+      mt=0
+      shutup()
       resolve_plants()
       sustain("Climb",-1)
     --end
@@ -1111,7 +1301,7 @@ select_verb ={
     pos=placestr()
     if plantdat[pos] ==nil then plantdat[pos]={} end 
     virtual_hotspots={}
-    get_greens(41, virtual_hotspots)
+    get_greens(57, virtual_hotspots)
     if #virtual_hotspots>0 then
       focus=inventory
     else
@@ -1143,7 +1333,7 @@ inventory_verb_resolve ={
       inform("Eating an apple gave you the energy to pick up 8 items.")
       sustain("Pick up",8)
     end
-    if item.id ==115 then
+    if item.id ==115 then --mushroom
     		inform('Eating a mushroom gave you the energy to plant 3 times.')
       sustain('Plant',3)
     end
@@ -1177,18 +1367,18 @@ inventory_verb_resolve ={
       inform("Eating grapes gave you the energy to throw 6 items.")
       sustain("Throw",6)
     end
-    if item.id ==41 then --acorn
-      inform("Eating an acorn gave you the energy to climb 1 time.")
-      sustain("Climb",1)
+    if item.id ==41+16 then --acorn
+      inform("Eating an acorn gave you the energy to climb 2 times.")
+      sustain("Climb",2)
     end
   end,
 
   ['Throw'] = function()
     -- default true, can be cancelled.
     success_throw=true
-    if cur(inventory).id ==9 then
+    if cur(inventory).id ==25 then
       inform("It didn't fly very far.")
-      drop(6-1,12-2,9,2,2)
+      drop(6-1,12-2,25,2,2)
       if place.x ==0 and place.y ==24 then inform("It falls lightly on the plate.") end
       success_throw=false
       --well, it still drains 1 throw energy.
@@ -1265,9 +1455,9 @@ inventory_verb_resolve ={
     end
     if place.x ==12 and place.y ==0 then
       inform("It hit a tree, and an acorn fell down.")
-      if obj_exists(5,9,41) then drop(5,9,41,1,1); inform("Another acorn fell in the exact same spot, shattering the earlier acorn.") end
-      if obj_exists(5,9,11) then inform("An acorn fell onto the small rock, shattering to pieces.")
-      else drop(5,9,41,1,1) end
+      if obj_exists(5,9,41+16) then drop(5,9,41+16,1,1); inform("Another acorn fell in the exact same spot, shattering the earlier acorn.")
+      elseif obj_exists(5,9,11) then inform("An acorn fell onto the small rock, shattering to pieces.")
+      else drop(5,9,41+16,1,1) end
       
     end
     if place.x ==12*2 and place.y ==0 then
@@ -1310,8 +1500,8 @@ inventory_verb_resolve ={
     if place.x ==12*2+12*2 and place.y ==112 then
       --island: spawn many acorns? some sort of reflection when all are dropped?
       inform("It hit a tree, and an acorn fell down.")
-      if obj_exists(4,3,41) then drop(4,3,41,1,1); inform("Another acorn fell in the exact same spot, shattering the earlier acorn.") 
-      else drop(4,3,41,1,1) end
+      if obj_exists(4,3,41+16) then drop(4,3,41+16,1,1); inform("Another acorn fell in the exact same spot, shattering the earlier acorn.") 
+      else drop(4,3,41+16,1,1) end
     end
 
     -- function has returned by now
@@ -1323,16 +1513,27 @@ inventory_verb_resolve ={
     --purple verb: first select an item,
     --then a place for it.
     plantdat.next=cur(inventory)
+    if plantdat.next~=nil then
     get_greens(cur(inventory).id, hotspots)
     if #hotspots==0 then
       inv_success = false
       inform('2) Umm, pick an area that isn\'t so full of stuff.')
       return
     end
+    if not plantable(cur(inventory).id) then
+    inv_success=false
+    inform('Any item but that one.')
+    else
     inform(fmt("2) Select one of %d available spots.", #hotspots))
     focus=hotspots
+    end
+    else inv_success=false end
   end,
 }
+
+function plantable(id)
+		return fget(id,1)
+end
 
 db={
   --id by corner given; what does it represent?
@@ -1340,12 +1541,13 @@ db={
   [37]={w=2,h=2,canon="apple"},
   [69]={w=2,h=2,canon="grapes"},
   [39]={w=2,h=2,canon="pear"},
-  [41]={w=1,h=1,canon="acorn"},
-  [9]={w=2,h=2,canon="herb"},
+  [57]={w=1,h=1,canon="acorn"},
+  [25]={w=2,h=2,canon="herb"},
+  [115]={w=2,h=2,canon='mushroom'},
   [11]={w=1,h=1,canon="small rock"},
   [7]={w=2,h=2,canon="medium rock"},
   [27]={w=3,h=3,canon="BIG ROCK"},
-  [115]={w=2,h=2,canon="bun"},
+  [117]={w=2,h=2,canon="bun"},
   [236]={w=2,h=2,canon='pitchplate'},
 }
 
@@ -1456,12 +1658,14 @@ places={
 }
 
 --game state
+debug=false
 place={x=0,y=0}
+if debug then place.x=48; place.y=112 end
 verbs={"Eat",i=1}
 verbsus={}
 verbdat={["Eat"]={col=8}, ["Pick up"]={col=6}, ["Move"]={col=6}, ["Reflect"]={col=11}, ["Throw"]={col=8}, ["Plant"]={col=1}, ["Climb"]={col=6}, ["Retry"]={col=11}, ["Plant"]={col=1}, ["Chop"]={col=6}}
 plantdat={next=nil}
-inventory={i=1,h=2*8+2*8,{id=37,w=2,h=2}}--,{id=37,w=2,h=2}}
+inventory={i=1,h=2*8+2*8,{id=37,w=2,h=2}}--{id=41+16,w=1,h=1}--,{id=37,w=2,h=2}}
 hotspots={i=1}
 flags={}
 fed=false
@@ -1853,7 +2057,7 @@ function climb_hotspots()
 end
 
 function goodfood(sp)
-  return sp ==5 or sp ==5+32*1 or sp ==5+32*2 or sp ==5+32*1+2*1 or sp ==5+32*1+2*2
+  return sp ==5 or sp ==5+32*1 or sp ==5+32*2 or sp ==5+32*1+2*1 or sp ==5+32*1+2*2+16
 end
 
 function alignment()
@@ -2013,7 +2217,7 @@ function plantsites()
     if count ==5 and not flags["Ps"] then
       inform_once("First came the small animals.")
       flags["P01"]=true
-      spawn(place.x,place.y,115)
+      spawn(place.x,place.y,117)
       --Ps set when the bun leaves
       --flags["Ps"]=true
       return true
@@ -2095,7 +2299,7 @@ for i=1,12 do
 		pmem(100+i-1, 0)
 end
 
-sustain('Climb',2)
+--sustain('Climb',4)
 
 -- breathe. %)
 -- my lua implementation of Perlin noise
@@ -2205,8 +2409,6 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 005:000110000001100000eee00000eee0000eeee0000ee1ee000eeeee000eee1ee0
 -- 007:000000000000000000000000000000000000000700007777000777aa0077aaaa
 -- 008:000000000000000000000000000000007aaa0000aaaaa000aaaaaa00aaaaaaaa
--- 009:0000000000000000000000000000000000000055000055550005550505055000
--- 010:0000050005500450055544000055440000004455500440555044000004405500
 -- 011:000000000000000000aaa30003aa3a00aaa33aa0aa7a73aaaa7aa73a0a7aaa73
 -- 017:f8fffffff8888888f888f888f8888ffff8888888f2222222ff000fffefffffef
 -- 018:fff800ff88880ffef8880fee88880fee88880fee2222ffee000ffeeeffffeeee
@@ -2216,8 +2418,8 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 022:0000000000000000ee0000001eee0110111eee10ee11ee00eeeee000eeee0000
 -- 023:00aaaaaa0aaaaaaa0aaaaaaa0aaaaaaaa7aaaaaaaaaaaaaaaaaaaaaa0aaaaaaa
 -- 024:aaaaaaaaaaaaaaa7aaaaaa7aaaaa77aaaaa7aaaaaaa7aaaaaaa7aaaaaaaa7aa0
--- 025:5440000000440554000445540550440455500044550000540000055400000004
--- 026:4400555040000550055000000555000000550000500000000000000000000000
+-- 025:0000000000000000000000000000000000000055000055550005550505055000
+-- 026:0000050005500450055544000055440000004455500440555044000004405500
 -- 027:00000000000000aa000000aa00000aaa00000aaa0000aaaa0000aaaa000aaaaa
 -- 028:aaa00000aa7777aaa777aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 -- 029:00000000000000000000000000000000a0000000a0000000aa000000aa000000
@@ -2230,7 +2432,8 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 038:1100000010066000166666006666666066666660666666666666666666666666
 -- 039:00000001000000010000000b000000bb00000bbb00000bbb00000bbb0000bbbb
 -- 040:1100000000000000b0000000bb000000bbb00000bbb00000bbb00000bbbb0000
--- 041:e33a333e3a3030a333333a33e40a004ee44a044eee4004eeee4444eeeee44eee
+-- 041:5440000000440554000445540550440455500044550000540000055400000004
+-- 042:4400555040000550055000000555000000550000500000000000000000000000
 -- 043:00aaaaaa00aaaaaa0aaaaaa70aaaaaaa0aaaaaaa0aaaaaaa0aaaaaaaaaaaaaaa
 -- 044:aaaaaaaaaaaaaa77aaaaa77a7aaa77aa77aa7aaaa7aa7aaaaaa7aaaaaa77aaaa
 -- 045:a7aa000077aaa000aaaaa000aaaaaa00aaaaaa00aaaaaaa0aaaaaa70aaaaa7a7
@@ -2241,6 +2444,7 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 054:6666666666666666666666666666666166666610666661100611110000011000
 -- 055:0000bbbb000bbcbb00bbccbb00bbcbcb00bbbcbb00bbbbbb000bbbbb0000bbb0
 -- 056:bbbb0000bbbbb000bbbbbb00bbbbbb00bbbbbb00bbbb5b00bbb5b0000bbb0000
+-- 057:e33a333e3a3030a333333a33e40a004ee44a044eee4004eeee4444eeeee44eee
 -- 059:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00aaaaaa
 -- 060:aa7aaaaaaa7aaaaaa77aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa00aaaaaa
 -- 061:aaaaaa7aaaaaa7a7aaaa7a7aaaaaa7a7aaaa7a70aaaaa700aaaaa000aaa00000
@@ -2274,8 +2478,8 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 097:000000000000ff000000ff000000ff000fffff000ffff0000000000000000000
 -- 099:0000000000000000000000000000000000000000000000008888888888888888
 -- 100:0000000000000000000000000000000000000000bbbb0000bbbbbbbbbbbbbbbb
--- 101:0000000100000011000000140000004400000041000000110000001400000044
--- 102:1000000044000000410000001100000014000000440000004100000011000000
+-- 101:0000000100000011000000140000004400000041000000110000001400000004
+-- 102:1000000044000000410000001100000014000000440000004100000010000000
 -- 103:aa22ffffaaa2ffffaaa22fffaaaa22ffaaaaa2ffaaaaa2ffaaaaa2ffaaaaaa2f
 -- 104:2aaaa22f2aaaaa27f2aaaaaaf2aaaaaaf22aaaaaff232222fffa7fffffffffff
 -- 105:ffffcf22ffffcff22fffffffaa2fff2f22ff2fff2ffff2fffffffff2ffffffff
@@ -2286,6 +2490,8 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 113:000ff000000ff000000ff000000ff000000ff000000ff000000ff000000ff000
 -- 115:0000000a00000aa80000aff8000affff00af88ff00af888f0afffaaa0afa3aff
 -- 116:a00000008aa0000088fa000088ffa000fffffa00fff88a00aaf88fa0fa3affa0
+-- 117:000f0fff000ffff0000fff0000ffff000ff0fff00fffffff0fffffff000fffff
+-- 118:0000000000000000000000000000000000000000ff000000ffff0000fffff000
 -- 119:aaaaaa22aaaaaaa2aaaaaaa2aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 -- 120:fffffffffffff22fff2f22aa2a22aaaaaaaaa222aaaa2cccaaa2ccccaa2cccff
 -- 121:ffffcfffffffcccfafffcfcc22cfffffcccccccccfffccc2fffff2ccfff22ccc
@@ -2296,6 +2502,8 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 129:00000000f0000000ff000000fff00000ffff0000fffff0000fffff00f0fffff0
 -- 131:00a33fff000a3fff000000ff00000fff00000fff00000fff00000fff000000ff
 -- 132:ffa33a00fff3a000fff00000fff00000ffff0000ffff0000ffff0000fff00000
+-- 133:0000ffff0000ffff0000fffa000fff0f000fff0f000ff00f00fff00000ff00ff
+-- 134:ffffff00aafffffffffffffffffffff0fffffff0fffffff0ffffff00fffff000
 -- 135:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa2aaaaaa2faaaaa2faaaa2da33a22faff7
 -- 136:a2cccfff2ccccfff2ccccccc2ccccccca33ccccc3773cccc773aa3d373aa7add
 -- 137:f2ccccccccccccccccccccccccccccc3cccc33333333333733337377d3d73777
@@ -2623,8 +2831,8 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 015:000000000000000000000000000073830000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000055650000000000000000005161000000
 -- 016:000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000052620000000000000000
 -- 017:000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000053630000000000000000
--- 018:0000000000000000000000000000000000000090a0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b00000000000000000000000
--- 019:0000708000000000000000000000000000000091a1007080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+-- 018:0000000000000000000000000000000000000091a1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b00000000000000000000000
+-- 019:0000708000000000000000000000000000000092a2007080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 -- 020:000071810000000050600000000000000000000000007181000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 -- 021:0000000000000000516100000000000000b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003747000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 -- 022:000000000000000000000000000000000000000000000000506000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003848000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -2679,6 +2887,10 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 000:0300030003000300030003000300030003000300030003000300030003000300030003000300030003000300030003000300030003000300030003002090b8000000
 -- 003:010001000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100000000000000
 -- </SFX>
+
+-- <FLAGS>
+-- 000:00000000002020000000000000000000000000000020200000000000000000000000000000202020200000000000000000000000002020202020000000000000000000000020200000000000000000000000000000202000000000000000000000000000000000000000000000000000000000202000000000000000000000000000002020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+-- </FLAGS>
 
 -- <PALETTE>
 -- 000:140c1c44243430346d4e4a4e854c30346524d04648757161597dced27d2c8595a16daa2cd2aa996dc2cadad45edeeed6
