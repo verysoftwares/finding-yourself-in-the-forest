@@ -434,7 +434,9 @@ breathe6=breathen(63,30,28)--breathen(10,20,16)--breathen(31,44,55)--breathen(44
 function titlescr()
 	-- audio layer %)
 			
+	if not debug then
 			titlemusic2()
+	end
 			
 			--brth()
 			--titlemusic()
@@ -549,9 +551,17 @@ function gameon()
    				hspot=cur(hotspots)
    				inform(nil)
 
+       if cur(verbs)=='Move' then
+       track({verb={cur(verbs),'hotspot resolve'},
+              place={x=hspot.nextx,y=hspot.nexty},
+             })
+       --trace(hspot.nextx,6)
+       --trace(hspot.nexty,7)
+       else
        track({verb={cur(verbs),'hotspot resolve'},
               place={x=place.x,y=place.y},
              })
+							end
 
    				local action= hotspot_verb_resolve[cur(verbs)]
        if action then action() 
@@ -593,9 +603,11 @@ function gameon()
    			   --lastverb=cur(verbs)
        local action= select_verb[cur(verbs)]
        if action then action() 
+       if cur(verbs)~='Move' then
        track({verb={cur(verbs),'hotspot resolve'},
               place={x=place.x,y=place.y},
              })
+       end
        else trace(fmt('undefined verb selection %s',cur(verbs))) end 
    		end
 	end
@@ -940,7 +952,23 @@ function highlight(info)
 										rem(tracker,i)
 								end
 						end
+						if verb=='Move' and info.place.x==12 and info.place.y==0 then
+								ins(narrator_say,'You\'ll need a new verb to properly utilize that area.')
+								ins(narrator_say,'Perhaps head to a different direction next time.')
+						end
+						if verb=='Move' and info.place.x==0 and info.place.y==24 then
+								ins(narrator_say,'It doesn\'t seem like there\'s anything to do there yet.')
+								ins(narrator_say,'Perhaps head to a different direction next time.')
+						end
+						if verb=='Move' and info.place.x==228 and info.place.y==0 then
+								ins(narrator_say,'That direction seems very fruitful, if you\'ll excuse the pun.')
+						end
+						if verb=='Retry' and #inventory>0 then
+								ins(narrator_say,'Since you were still carrying items, they were dropped here.')
+								ins(narrator_say,'You might find them useful on your next run.')
+						end
 						if #tracker==0 then ins(narrator_say,'See you again tomorrow. The forest will still be here.') end
+
       inform_multi(narrator_say)
       --if verb=='Pick up' then
         ins(pg_screens, {verb=verb})
@@ -1658,9 +1686,9 @@ places={
 }
 
 --game state
-debug=false
+debug=true
 place={x=0,y=0}
-if debug then place.x=48; place.y=112 end
+--if debug then place.x=48; place.y=112 end
 verbs={"Eat",i=1}
 verbsus={}
 verbdat={["Eat"]={col=8}, ["Pick up"]={col=6}, ["Move"]={col=6}, ["Reflect"]={col=11}, ["Throw"]={col=8}, ["Plant"]={col=1}, ["Climb"]={col=6}, ["Retry"]={col=11}, ["Plant"]={col=1}, ["Chop"]={col=6}}
@@ -2006,6 +2034,14 @@ function drop(dx,dy,did,dw,dh,ppx,ppy)
   end
 end
 
+function lootdrop(dx,dy,did,dw,dh,ppx,ppy)
+  for py=0,dh-1 do
+  for px=0,dw-1 do
+    mset(dx+px, dy+py+12, did+px+py*16)
+  end
+  end
+end
+
 function obj_exists(dx,dy,did,px,py)
   virtual_hotspots={}
   obj_hotspots(virtual_hotspots,px,py)
@@ -2124,7 +2160,7 @@ function verb_has(id)
   return nil
 end
 
-function spawn(px,py,id)
+function spawn(px,py,id,loot)
   --logic for lootdropping and Planting
   
   --get first available green tile
@@ -2132,7 +2168,8 @@ function spawn(px,py,id)
   fgx,fgy=get_green(px,py,iw,ih)
   if fgx ==nil then return false end
   
-  drop(fgx,fgy,id,iw,ih)
+  if loot then lootdrop(px+fgx,py+fgy,id,iw,ih)
+  else drop(fgx,fgy,id,iw,ih) end
 
   return true
 end
@@ -2295,10 +2332,11 @@ end
 --populate dropped loot from last try
 for i=1,12 do
 		if pmem(100+i-1) ==0 then break end
-		spawn(pmem(111+1), pmem(111+2), pmem(100+i-1))
+		spawn(pmem(111+1), pmem(111+2), pmem(100+i-1), true)
 		pmem(100+i-1, 0)
 end
 
+if debug then sustain('Climb',4) end
 --sustain('Climb',4)
 
 -- breathe. %)
