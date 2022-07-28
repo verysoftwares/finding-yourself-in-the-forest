@@ -637,7 +637,13 @@ function gameon()
        -- was defined, where needed?
    			   --lastverb=cur(verbs)
        local action= select_verb[cur(verbs)]
-       if action then action() 
+       if action then 
+       local pos=placestr()
+       if plantstats[pos] and plantstats[pos].bugged and cur(verbs)~='Move' then
+       		inform('No! Let\'s just get out of here!')
+       else
+       action() 
+       end
        --[[if cur(verbs)~='Move' and cur(verbs)~='Climb' and cur(verbs)~='Plant' then
        track({verb={cur(verbs),'hotspot resolve'},
               place={x=place.x,y=place.y},
@@ -660,16 +666,22 @@ function gameon()
 	end
 	if not verb_has("Move") then
 			--if no banana in inventory
-			if not inv_has(5) then
+			if not inv_has(5) and not (plantdat.next and plantdat.next.id==5) then
 					softlock=true
-					if area_has(5) and (verb_has('Pick up') or inv_has(37)) then 
+					if area_has(5) and (verb_has('Pick up') or (inv_has(37) and not (plantstats[placestr()] and plantstats[placestr()].bugged))) then 
 							softlock=false
 					end
 					--banana tree, save me
 					if softlock and place.x ==0 and place.y ==0 then
 							--well, i could still throw something.
 							if verb_has("Throw") then
-									if #inventory>=1 then
+									local function legitthrow()
+											for i,v in ipairs(inventory) do
+													if v.id~=173 and v.id~=25 then return true end
+											end
+											return false
+									end
+									if legitthrow() then--#inventory>=1 then
 											softlock=false
 											--oh, but i only have item(s) 
 											--that will cause an
@@ -892,6 +904,14 @@ function gameon()
 					f.src=placestr()
 			end
 			if f.src==placestr() then
+			if math.random(1,100)<=4 then
+					local fx,fy=f.x//8-1,f.y//8-1
+					if fx>=0 and fx<12 and fy>=0 and fy<12 then
+							if plantable(mget(fx,fy+12)) then
+									mset(fx,fy+12,0)
+							end
+					end
+			end
 			f.x=f.x+math.random(-1,1)
 			f.y=f.y+math.random(-1,1)
 			if f.x<0 then f.x=0 end; if f.x>=240-8 then f.x=240-8 end
@@ -1307,6 +1327,24 @@ hotspot_verb_resolve ={
     -- [[ event system pickup ]]
     --[[//under construction//]]
 
+				if hspot.id==117 then
+						inform('The bunny runs away, faster than you can run.')
+						for hx=hspot.x,hspot.x+hspot.w-1 do
+						for hy=hspot.y+12,hspot.y+12+hspot.h-1 do
+								mset(hx,hy,0)
+						end
+						end
+						return
+				end
+				if hspot.id==160 then
+						inform('The deer prances to safety.')
+						for hx=hspot.x,hspot.x+hspot.w-1 do
+						for hy=hspot.y+12,hspot.y+12+hspot.h-1 do
+								mset(hx,hy,0)
+						end
+						end
+						return
+				end
 				if hspot.id==27 then
 						inform('It\'s too heavy to lift!')
 						return
@@ -1458,6 +1496,10 @@ select_verb ={
                      'but you\'re not strong enough yet.'})
        -- omstartin lisAmAAre: millon ittensA heittAminen toimis
        return
+    end
+    if area_has(117) or area_has(160) then
+    		inform('No! You might hit the animals!')
+      return
     end
     inform("What is worth throwing away?")
     focus=inventory    
@@ -2461,6 +2503,10 @@ function resolve_plants()
   --inform("Because you get input in a new language, but haven't forgotten your earlier one, you get a bilingual thought.")
   
   plantdat[pos]=nil
+  
+  if plantstats[pos] and plantstats[pos].bugged then
+  		inform_once('AAAAAAAAAAAAAAAAA!!!')
+  end
 end
 
 function plantsites()
