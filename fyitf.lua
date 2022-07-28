@@ -16,11 +16,6 @@ flr=math.floor
 min=math.min
 max=math.max
 
--- beginner's mind :)
-	-- keep tutorial regardless of
-	-- cartridge changes.
-		pmem(10, 0)
-
 -- kaikki sfx nollan wavet kAyttAAn waveformia 4
 -- oon ollu idiuutti
 for w=0,30-1,1 do
@@ -558,7 +553,7 @@ function gameon()
        --trace(hspot.nextx,6)
        --trace(hspot.nexty,7)
        else
-       track({verb={cur(verbs),'hotspot resolve'},
+       track({verb={cur(verbs),'hotspot resolve',hspot.id},
               place={x=place.x,y=place.y},
              })
 							end
@@ -603,11 +598,11 @@ function gameon()
    			   --lastverb=cur(verbs)
        local action= select_verb[cur(verbs)]
        if action then action() 
-       if cur(verbs)~='Move' then
+       --[[if cur(verbs)~='Move' and cur(verbs)~='Climb' and cur(verbs)~='Plant' then
        track({verb={cur(verbs),'hotspot resolve'},
               place={x=place.x,y=place.y},
              })
-       end
+       end]]
        else trace(fmt('undefined verb selection %s',cur(verbs))) end 
    		end
 	end
@@ -627,7 +622,7 @@ function gameon()
 			--if no banana in inventory
 			if not inv_has(5) then
 					softlock=true
-					if area_has(5) then 
+					if area_has(5) and (verb_has('Pick up') or inv_has(37)) then 
 							softlock=false
 					end
 					--banana tree, save me
@@ -650,6 +645,13 @@ function gameon()
 									-- including more grapes.
 							end
 					end
+					old_hotspots=hotspots
+					hotspots={}
+					climb_hotspots()
+					if #hotspots>0 and verb_has('Climb') then
+							softlock=false
+					end
+					hotspots=old_hotspots
 			end
 	end
 	if place.x ==12 and place.y ==24*2 then
@@ -941,22 +943,49 @@ function narrate()
   --end
 end
 
---firsttimes={}
+function countverbs(vrb)
+		local out2=0
+		for i=1,#tracker do
+				local tr=tracker[i]
+				if tr.verb[1]==vrb then out2=out2+1 end
+		end
+		return out2
+end
+function countunique(vrb,infoplace)
+		local seenplaces={infoplace}
+		local function matchplace(p)
+				for j,w in ipairs(seenplaces) do
+						if w.x==p.x and w.y==p.y then
+								return true
+						end
+				end
+				return false
+		end
+		for i=1,#tracker do
+				local tr=tracker[i]
+				if tr.verb[1]==vrb and not matchplace(tr.place) then ins(seenplaces,tr.place) end
+		end
+		return #seenplaces
+end
+
+firsttimes={}
 function highlight(info)
   -- play of the games :)
   local out=true
   if info.verb then
     local verb=info.verb[1]
     local cntx=info.verb[2]
+    local arg=info.verb[3]
     if cntx=='hotspot resolve' then
       -- if is first occurence in pmem and..
 						local narrator_say ={fmt('On this run, you first learned to %s here.',verb)}
-						for i=#tracker,1,-1 do
+						--[[for i=#tracker,1,-1 do
 								local tr=tracker[i]
 								if tr.verb and tr.verb[1]==verb then
 										rem(tracker,i)
 								end
-						end
+						end]]
+						if indexof(firsttimes,verb)==-1 then 
 						if verb=='Move' and info.place.x==12 and info.place.y==0 then
 								ins(narrator_say,'You\'ll need a new verb to properly utilize that area.')
 								ins(narrator_say,'Perhaps head to a different direction next time.')
@@ -972,13 +1001,47 @@ function highlight(info)
 								ins(narrator_say,'Since you were still carrying items, they were dropped here.')
 								ins(narrator_say,'You might find them useful on your next run.')
 						end
+						if verb=='Retry' and place.x ==12 and place.y ==24*2 then
+								ins(narrator_say,'Oh dear. You were so close to the end.')
+								ins(narrator_say,'You came here missing a crucial verb. What can you do with a mirror?')
+						end
+						if verb=='Throw' then
+								ins(narrator_say,fmt('You threw items in %d different places.',countunique('Throw',info.place)))
+								ins(narrator_say,'Experiment with throwing in new locations.')
+						end
+						if verb=='Reflect' then
+								local _,neg,pos=alignment()
+								ins(narrator_say,fmt('You reflected a total of %d times, with %d positive thoughts and %d negative ones.',countverbs('Reflect')+1,pos,neg))
+								ins(narrator_say,'Be sure to reflect often on your journey. Somewhere in this forest, you will be judged based on your thoughts.')
+						end
+						end
+						if indexof(firsttimes,verb)~=-1 then 
+						out=false
+						if indexof(firsttimes,'nothrow')==-1 and verb=='Eat' and arg==69 and countverbs('Throw')==0 then
+								rem(narrator_say,1)
+								ins(narrator_say,'Here you ate grapes and learned Throw, but you never threw anything.')
+								ins(narrator_say,'I would recommend picking up small rocks and throwing those. You never know what might happen.')
+								out=true
+								ins(firsttimes,'nothrow')
+						end
+						if indexof(firsttimes,'noclimb')==-1 and verb=='Eat' and arg==57 and countverbs('Climb')==0 then
+								rem(narrator_say,1)
+								ins(narrator_say,'Here you ate an acorn and learned Climb, but you never climbed anywhere.')
+								ins(narrator_say,'I would recommend checking each location for a climb spot.')
+								out=true
+								ins(firsttimes,'noclimb')
+						end
+						else
+						ins(firsttimes,verb)
+						end
 						if #tracker==0 then ins(narrator_say,'See you again tomorrow. The forest will still be here.') end
-
-      inform_multi(narrator_say)
-      --if verb=='Pick up' then
-        ins(pg_screens, {verb=verb})
+						
+      if out then
+        inform_multi(narrator_say)
+      		ins(pg_screens, {verb=verb})
         ins(pg_screens, {place=info.place})
-        
+      end
+      --if verb=='Pick up' then
         --ins(firsttimes,info.verb[1])
         return out
       --end 
@@ -1302,6 +1365,9 @@ select_verb ={
     end
     sustain("Reflect",-1)
 
+    track({verb={'Reflect','hotspot resolve'},
+           place={x=place.x,y=place.y},
+          })
   end,
 
   ['Retry'] = function()
@@ -1321,6 +1387,11 @@ select_verb ={
     pmem(111+2, place.y)
     
     pmem(10,1)
+
+    track({verb={'Retry','hotspot resolve'},
+           place={x=place.x,y=place.y},
+          })
+
     narrate()
     TIC=postgame
   end,
@@ -1404,11 +1475,15 @@ inventory_verb_resolve ={
       inform("Eating an acorn gave you the energy to climb 2 times.")
       sustain("Climb",2)
     end
+    track({verb={'Eat','hotspot resolve',item.id},
+           place={x=place.x,y=place.y},
+          })
   end,
 
   ['Throw'] = function()
     -- default true, can be cancelled.
     success_throw=true
+
     if cur(inventory).id ==25 then
       inform("It didn't fly very far.")
       drop(6-1,12-2,25,2,2)
@@ -1446,12 +1521,12 @@ inventory_verb_resolve ={
         success_throw = false
       end]]
       
-      if not spawn(0,0,cur(inventory).id,true) then
-      		success_throw=false
-        inform('You hesitate.')
-      else
+      if spawn(0,0,cur(inventory).id,true) then
       		success_throw=true
         inform('It flew all the way to the other screen.')
+      else
+      		success_throw=false
+        inform('You hesitate.')
       end
     end
 
@@ -1459,6 +1534,12 @@ inventory_verb_resolve ={
       inv_success = false
       return 
     end
+
+    track({verb={'Throw','hotspot resolve',cur(inventory).id},
+           place={x=place.x,y=place.y},
+          })
+
+				if cur(inventory).id==173 or cur(inventory).id==25 or cur(inventory).id==27 then return end
 
     if place.x ==216 and place.y ==0 then
       inform("It hit a tree, and grapes fell down.")
@@ -1591,6 +1672,7 @@ db={
   [27]={w=3,h=3,canon="BIG ROCK"},
   [117]={w=2,h=2,canon="bun"},
   [236]={w=2,h=2,canon='pitchplate'},
+		[173]={w=3,h=4,canon='Henry'},
 }
 
 endings={
@@ -1700,7 +1782,7 @@ places={
 }
 
 --game state
-debug=true
+debug=false
 place={x=0,y=0}
 --if debug then place.x=48; place.y=112 end
 verbs={"Eat",i=1}
@@ -1718,8 +1800,6 @@ duck_msg2="The duck nimbly catches it and gobbles it up. They get bigger, but no
 lore={i=1,msg=init_msg,long=0}
 --if game has ever been reset, 
 --suppress init_msgs
-if pmem(10) ==1 then lore.msg=nil; flags[1]=true; flags[2]=true; flags[3]=true end
-
 focus=verbs
 t=0
 
@@ -1731,100 +1811,6 @@ t=0
 math.randomseed(time()*999)
 rand=math.random
 rand();rand();rand()
-
--- [[ map memory ]]
-missA_kaikki_on = {
-  -- 00,00,z1
-  {},
-    -- 12,00,z2
-    {},
-      -- 00,24,z3
-      {},
-        -- 12,24,z4
-        {},
-    -- 12,00,å1
-    {},
-      -- 
-      {},
-        -- 
-        {},
-          -- 
-          {},
-        {},
-          {},
-            {},
-              {},
-  {},
-    {},
-      {},
-        {},
-            {},
-              {},
-                {},
-                  {},
-}
-
-missa_kaikki_on = {
-  -- 00,00
-  -- banana zone
-  {},
-    -- 00,24
-    -- baseball pitch zone
-    {},
-    -- 12,00
-    -- reflective zone
-    {},
-      -- 12,24
-      -- missing zone1
-      {},
-      -- 24,00
-      -- mallard zone
-      {},
-        -- 24,12
-        -- rockmonenteen zone
-        {},
-          {},
-            {},
-              {},
-                {},
-    -- 228,00
-    -- obvious chop path
-    {},
-      -- 216,00
-      -- grapevine zone
-      {},
-        -- 216,112
-        -- majurin mittatikku
-        {},
-  -- 48,112
-  {},
-    -- 
-    -- 
-    {},
-      -- 
-      -- 
-      {},
-        -- 
-        -- 
-        {},
-  -- 
-  -- 
-  {},
-    -- 
-    -- 
-    {},
-      -- 
-      -- 
-      {},
-        -- 
-        -- 
-        {},
-            {},
-              {},
-                {},
-                  {},
-}
-
 
 function grid()
   for y=0,240,12 do for x=0,136,12 do
@@ -2177,7 +2163,10 @@ end
 function spawn(px,py,id,loot)
   --logic for lootdropping and Planting
   
+  if id==173 then return false end
+
   --get first available green tile
+  
   iw=db[id].w; ih=db[id].h
   fgx,fgy=get_green(px,py,iw,ih)
   if fgx ==nil then return false end
@@ -2297,7 +2286,12 @@ end
 function lorespam(postlore)
  lx=8
  ly=8+8*12+8+8
+ 
  if lore.msg then
+		 --if btnp(4) then
+		 --		lore.i=#lore.msg
+		 --end
+		 
    for char=1,lore.i do
      lw=print(sub(lore.msg,char,char),lx,ly+lore.long,
               8+(t*0.1*0.4+char*0.1)%8,false,1,true)
@@ -2353,6 +2347,15 @@ end
 if debug then sustain('Climb',4) end
 if debug then sustain('Throw',3) end
 if debug then ins(inventory,{id=173,w=3,h=4}) end
+if debug then
+-- beginner's mind :)
+	-- keep tutorial regardless of
+	-- cartridge changes.
+		pmem(10, 0)
+end
+
+if pmem(10) ==1 then lore.msg=nil; flags[1]=true; flags[2]=true; flags[3]=true end
+
 --sustain('Climb',4)
 
 -- breathe. %)
