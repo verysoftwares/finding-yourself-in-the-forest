@@ -332,13 +332,23 @@ function breathe12()
 end
 
 function breathe13()
-		if t%(1)==0 then
-				sfx(7,
-				    -5+12*3+t%23+t%18-t%24,
+		if mt%(1)==0 then
+				sfx(8,
+				    -5+12*3+mt%23+mt%18-mt%24,
 								1+1,
 								2,
 								0x8,
 								0)
+		end
+		local freq=.88---t*.02
+		for w=0,32-1,1 do
+				freq=.88*.75--+1.5+sin(t*.001)
+				cur_smp=6+(perlin((w+mt)*.2*freq,12*9282+(w+mt)*.245*freq,12*771+(w+mt)*.1*freq)-.5)*6
+				freq=.407
+				cur_smp=cur_smp+(perlin((w+mt*.3)*.42*freq,12*92482+(w+mt)*.245*freq,12*7471+(w+mt)*.1*freq))*7
+				cur_smp=flr(cur_smp)%16
+				local addr=0xffe4*2 +2*32 +w
+				poke4(addr, cur_smp)
 		end
 end
 
@@ -835,6 +845,7 @@ function gameon()
 			end
 	end
 	
+	if not bugged(placestr()) then
 	if place.x==0 and place.y==0 then
 	breathe4()
 	end
@@ -862,9 +873,44 @@ function gameon()
 	if place.x==48 and place.y==112 then
 	breathe12()
 	end
+	else
+	breathe13()
+	flies= flies or {}
+	local function counthere()
+			local out=0
+			for i,f in ipairs(flies) do
+					if f.src==placestr() then out=out+1 end
+			end
+			return out
+	end
+	while counthere()<40 do ins(flies,{x=math.random(8,8+11*8),y=math.random(8,8+11*8),r=math.random(0,3),src=placestr()}) end 
+	end
+
+	for i,f in ipairs(flies) do
+			if (f.x<8 or f.x>=8*13 or f.y<8 or f.y>=8*13) then
+					f.src=placestr()
+			end
+			if f.src==placestr() then
+			f.x=f.x+math.random(-1,1)
+			f.y=f.y+math.random(-1,1)
+			if f.x<0 then f.x=0 end; if f.x>=240-8 then f.x=240-8 end
+			if f.y<0 then f.y=0 end; if f.y>=136-8 then f.y=136-8 end
+			if (i*0.4+t*0.4)%6<1 then f.r=math.random(0,3) end
+			spr(137+(t*0.2)%2,f.x,f.y,14,1,0,f.r,1,1)
+			end
+	end
 	
 	t=t+1
 	mt=mt+1
+end
+
+plantstats={
+		['0,0']={total=0,bugged=true},
+		['228,0']={total=0,bugged=true},
+}
+
+function bugged(pos)
+		return plantstats[pos] and plantstats[pos].bugged
 end
 
 params={'p+','p2+','p-','dt','w',i=1}
@@ -2021,7 +2067,7 @@ function obj_hotspots(target_tbl,px,py)
   for my=0,12-1 do
    for mx=0,12-1 do
     sp = mget(px+place.x+mx, py+place.y+12+my)
-    if sp>0 and not pos_checked(target_tbl, {mx,my}) then
+    if sp>0 and db[sp] and not pos_checked(target_tbl, {mx,my}) then
      --parse a rectangular area.
      --sprite adjacency rules apply.
      rx=1; ry=1
@@ -2530,7 +2576,7 @@ if pmem(10) ==1 then lore.msg=nil; flags[1]=true; flags[2]=true; flags[3]=true e
 
 -- run game.
 		TIC=titlescr
-if debug then TIC=autiotupa; focus=params end
+--if debug then TIC=autiotupa; focus=params end
 
 --sustain('Climb',4)
 
@@ -2747,6 +2793,8 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 134:ffffffeeaafffffffffffffffffffffefffffffefffffffeffffffeefffffeee
 -- 135:0000000000000000000000050000000000000000000000990000099900000996
 -- 136:0bbb0b50bb0b5b00000bbb0000b50bb00b5005b09bb000b099000b0099000000
+-- 137:eeeeeeeee0e00e0ee0e00e0eee0330eee0e33e0eee0330eee0e33e0ee0eeee0e
+-- 138:eeeeeeeeeee00eeeee0000eee0e33e0ee033330eee3003eee03ee30eee0ee0ee
 -- 144:00fff0ff000000ff000000ff000000ff000000ff000000ff000000ff0000000f
 -- 145:ff0fff00ff000000ff000000ff000000ff000000ff000000ff000000f0000000
 -- 151:0000999900096999000999990099999009969900099960000999000009900000
@@ -3097,6 +3145,7 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 005:010001000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100000000000000
 -- 006:030003000300030003000300030003000300030003000300030003000300030003000300030003000300030003000300030003000300030003000300000000000000
 -- 007:040004000400040004000400040004000400040004000400040004000400040004000400040004000400040004000400040004000400040004000400406000000000
+-- 008:030003000300030003000300030003000300030003000300030003000300030003000300030003000300030003000300030003000300030003000300000000000000
 -- </SFX>
 
 -- <FLAGS>
