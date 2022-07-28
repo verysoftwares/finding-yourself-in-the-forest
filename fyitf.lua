@@ -1794,7 +1794,7 @@ places={
 }
 
 --game state
-debug=true
+debug=false
 place={x=0,y=0}
 --if debug then place.x=48; place.y=112 end
 verbs={"Eat",i=1}
@@ -2109,9 +2109,9 @@ function goodfood(sp)
 end
 
 function alignment()
-  bal=0
-  neg=0
-  pos=0
+  local bal=0
+  local neg=0
+  local pos=0
   for k,th in pairs(thoughts.read) do
     if th ==1 then bal=bal-1; neg=neg+1 end
     if th ==2 then bal=bal+1; pos=pos+1 end
@@ -2120,12 +2120,12 @@ function alignment()
 end
 
 function mostly_negative()
-  bal,neg,pos=alignment()
+  local bal,neg,pos=alignment()
   return bal<0
 end
 
 function mostly_positive()
-  bal,neg,pos=alignment()
+  local bal,neg,pos=alignment()
   return bal>=0
 end
 
@@ -2300,9 +2300,11 @@ function lorespam(postlore)
  ly=8+8*12+8+8
  
  if lore.msg then
-		 --if btnp(4) then
-		 --		lore.i=#lore.msg
-		 --end
+		 local skip=false
+		 if lore.i>1 and lore.i<#lore.msg and btnp(4) then
+		 		lore.i=#lore.msg
+					skip=true
+		 end
 		 
    for char=1,lore.i do
      lw=print(sub(lore.msg,char,char),lx,ly+lore.long,
@@ -2331,7 +2333,7 @@ function lorespam(postlore)
        if lore.msg ==duck_msg2 then flags["DB"]=true end
 
        if focus ==lore then
-         if btnp(4) then
+         if (not skip) and btnp(4) then
            lore.msgbatch.j=lore.msgbatch.j+1
            lore.msg=lore.msgbatch[lore.msgbatch.j]
            lore.i=1
