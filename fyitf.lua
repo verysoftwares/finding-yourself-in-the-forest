@@ -702,7 +702,7 @@ function gameon()
 			for my=0,12-1 do
 				for mx=0,12-1 do
 					sp = mget(place.x+mx, place.y+12+my)
-					ck=0; if sp ==69 or sp ==70 or sp ==85 or sp ==86 or sp ==41+16 then ck=14 end
+					ck=0; if sp ==69 or sp ==70 or sp ==85 or sp ==86 or sp ==41+16 or sp ==117 or sp ==117+1 or sp ==117+16 or sp ==117+16+1 then ck=14 end
 					spr(sp,8+mx*8,8+my*8,ck)
 				end
 			end
@@ -1210,8 +1210,9 @@ hotspot_verb_resolve ={
 						inform('This isn\'t a cartoon, you can\'t pick up the hole.')
 						return
 				end
-				if hspot.id==173 then
+				if hspot.id==173 and not flags['hs'] then
 						inform_multi({'Damn, that\'s one heavy statue!'})
+						flags['hs']=true
 				end
 
     -- jos mahtuu
@@ -1469,7 +1470,7 @@ inventory_verb_resolve ={
     		inform('Eating a mushroom gave you the energy to plant 3 times.')
       sustain('Plant',3)
     end
-    if item.id ==7 or item.id ==11 then --rock
+    if --[[item.id ==7 or]] item.id ==11 then --rock
       inform_once("The rock does not sit well with you. You lost some energy to pick things up.")
       if flags["rock_chomp"] then inform("You should know better by now.") end
       sustain("Pick up",-2)
@@ -1479,8 +1480,8 @@ inventory_verb_resolve ={
     -- communicate with outside layer
     -- that action was cancelled when
     -- item was unrecognized or an omstart.
-    if item.id ==27 then
-      inform_once("You really gonna eat all that, huh.")
+    if item.id ==27 or item.id ==7 or item.id ==173 then
+      inform("You really gonna eat all that, huh.")
       inv_success = false
     end
     if item.id ==5 then --banana
@@ -1503,6 +1504,10 @@ inventory_verb_resolve ={
       inform("Eating an acorn gave you the energy to climb 2 times.")
       sustain("Climb",2)
     end
+    if item.id ==25 then
+    		inform('It tastes minty fresh, but doesn\'t give you much energy.')
+    end
+    
     track({verb={'Eat','hotspot resolve',item.id},
            place={x=place.x,y=place.y},
           })
@@ -1578,7 +1583,7 @@ inventory_verb_resolve ={
            place={x=place.x,y=place.y},
           })
 
-				if cur(inventory).id==173 or cur(inventory).id==25 or cur(inventory).id==27 then return end
+				if cur(inventory).id==173 or cur(inventory).id==25 or cur(inventory).id==27 then if success_throw then sustain('Throw',-1) end; return end
 
     if place.x ==216 and place.y ==0 then
       inform("It hit a tree, and grapes fell down.")
@@ -2149,7 +2154,8 @@ function climb_hotspots()
 end
 
 function goodfood(sp)
-  return sp ==5 or sp ==5+32*1 or sp ==5+32*2 or sp ==5+32*1+2*1 or sp ==5+32*1+2*2+16
+  --return sp ==5 or sp ==5+32*1 or sp ==5+32*2 or sp ==5+32*1+2*1 or sp ==5+32*1+2*2+16
+  return plantable(sp)
 end
 
 function alignment()
@@ -2612,8 +2618,8 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 113:000ff000000ff000000ff000000ff000000ff000000ff000000ff000000ff000
 -- 115:0000000a00000aa80000aff8000affff00af88ff00af888f0afffaaa0afa3aff
 -- 116:a00000008aa0000088fa000088ffa000fffffa00fff88a00aaf88fa0fa3affa0
--- 117:000f0fff000ffff0000fff0000ffff000ff0fff00fffffff0fffffff000fffff
--- 118:0000000000000000000000000000000000000000ff000000ffff0000fffff000
+-- 117:eeefefffeeeffffeeeefffeeeeffffeeeff0fffeefffffffefffffffeeefffff
+-- 118:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeffeeeeeeffffeeeefffffeee
 -- 119:0000f0000000f0f00000f0000000ff000000f0000000f0000000f0000000ffff
 -- 120:f0000000000000000000000000000000000000000000000000000000ffffffff
 -- 121:00000000000000000000000000000000000000000000000000000000ffffffff
@@ -2626,8 +2632,8 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 129:00000000f0000000ff000000fff00000ffff0000fffff0000fffff00f0fffff0
 -- 131:00a33fff000a3fff000000ff00000fff00000fff00000fff00000fff000000ff
 -- 132:ffa33a00fff3a000fff00000fff00000ffff0000ffff0000ffff0000fff00000
--- 133:0000ffff0000ffff0000fffa000fff0f000fff0f000ff00f00fff00000ff00ff
--- 134:ffffff00aafffffffffffffffffffff0fffffff0fffffff0ffffff00fffff000
+-- 133:eeeeffffeeeeffffeeeefffaeeefffefeeefffefeeeffeefeefffeeeeeffeeff
+-- 134:ffffffeeaafffffffffffffffffffffefffffffefffffffeffffffeefffffeee
 -- 135:0000000000000000000000050000000000000000000000990000099900000996
 -- 136:0bbb0b50bb0b5b00000bbb0000b50bb00b5005b09bb000b099000b0099000000
 -- 144:00fff0ff000000ff000000ff000000ff000000ff000000ff000000ff0000000f
@@ -2992,7 +2998,7 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- </SFX>
 
 -- <FLAGS>
--- 000:00000000002020000000000000000000000000000020200000000000000000000000000000202020200000000000000000000000002020202020000000000000000000000020200000000000000000000000000000202000000000000000000000000000000000000000000000000000000000202000000000000000000000000000002020000020200000000000000000000000000000202000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+-- 000:00000000002020000000000000000000000000000020200000202000000000000000000000202020202020000000000000000000002020202020000000000000000000000020200000000000000000000000000000202000000000000000000000000000000000000000000000000000000000202000000000000000000000000000002020000020200000000000000000000000000000202000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 -- </FLAGS>
 
 -- <PALETTE>
