@@ -1719,6 +1719,7 @@ db={
   [117]={w=2,h=2,canon="bun"},
   [236]={w=2,h=2,canon='pitchplate'},
 		[173]={w=3,h=4,canon='Henry'},
+		[250]={w=2,h=1,canon='hole'},
 }
 
 endings={
