@@ -1029,14 +1029,14 @@ function highlight(info)
 						end
 						if indexof(firsttimes,verb)~=-1 then 
 						out=false
-						if indexof(firsttimes,'nothrow')==-1 and verb=='Eat' and arg==69 and countverbs('Throw')==0 then
+						if indexof(firsttimes,'Throw')==-1 and indexof(firsttimes,'nothrow')==-1 and verb=='Eat' and arg==69 and countverbs('Throw')==0 then
 								rem(narrator_say,1)
 								ins(narrator_say,'Here you ate grapes and learned Throw, but you never threw anything.')
 								ins(narrator_say,'I would recommend picking up small rocks and throwing those. You never know what might happen.')
 								out=true
 								ins(firsttimes,'nothrow')
 						end
-						if indexof(firsttimes,'noclimb')==-1 and verb=='Eat' and arg==57 and countverbs('Climb')==0 then
+						if indexof(firsttimes,'Climb')==-1 and indexof(firsttimes,'noclimb')==-1 and verb=='Eat' and arg==57 and countverbs('Climb')==0 then
 								rem(narrator_say,1)
 								ins(narrator_say,'Here you ate an acorn and learned Climb, but you never climbed anywhere.')
 								ins(narrator_say,'I would recommend checking each location for a climb spot.')
@@ -1197,6 +1197,22 @@ hotspot_verb_resolve ={
 
     -- [[ event system pickup ]]
     --[[//under construction//]]
+
+				if hspot.id==27 then
+						inform('It\'s too heavy to lift!')
+						return
+				end
+				if hspot.id==236 then
+						inform('A pressure plate. It\'s bolted into the ground.')
+						return
+				end
+				if hspot.id==250 then
+						inform('This isn\'t a cartoon, you can\'t pick up the hole.')
+						return
+				end
+				if hspot.id==173 then
+						inform_multi({'Damn, that\'s one heavy statue!'})
+				end
 
     -- jos mahtuu
     if inventory.h+hspot.h<=12 then
@@ -1497,27 +1513,38 @@ inventory_verb_resolve ={
     success_throw=true
 
     if cur(inventory).id ==25 then
+      if place.x ==0 and place.y ==24 then inform("You hesitate.") 
+      else
+      if closedrop(6-1,12-2,25,2,2) then
       inform("It didn't fly very far.")
-      drop(6-1,12-2,25,2,2)
-      if place.x ==0 and place.y ==24 then inform("It falls lightly on the plate.") end
+      else
+      inform('You hesitate.')
+      success_throw=false
+      end
+      end
       --success_throw=false
       --well, it still drains 1 throw energy.
     end
     if cur(inventory).id ==27 then
-      inform("It didn't fly very far.")
-      drop(6-2,12-3,27,3,3)
-      if place.x ==0 and place.y ==24 then inform("It's not heavy enough to push the plate down.") end
+      --inform("It didn't fly very far.")
+      --closedrop(6-2,12-3,27,3,3)
+      --if place.x ==0 and place.y ==24 then inform("It's not heavy enough to push the plate down.") end
       --success_throw=false
     end
     if cur(inventory).id ==173 then
       --owl statue
-      inform("It didn't fly very far.")
-      drop(6-2,12-4,173,3,4)
+      if closedrop(6-2,12-4,173,3,4) then
       if place.x ==0 and place.y ==24 then
         --mirror room opened 
         inform("It pushes the plate down.") 
         flags["B"]=true
         drop(12-3-2,12-2-2,250,2,1)
+      else
+      inform("It didn't fly very far.")
+      end
+      else
+      inform('You hesitate.')
+      success_throw=false
       end
       --success_throw=false
     end
@@ -2046,12 +2073,29 @@ function drop(dx,dy,did,dw,dh,ppx,ppy)
   end
 end
 
-function lootdrop(dx,dy,did,dw,dh,ppx,ppy)
+function fardrop(dx,dy,did,dw,dh,ppx,ppy)
   for py=0,dh-1 do
   for px=0,dw-1 do
     mset(dx+px, dy+py+12, did+px+py*16)
   end
   end
+end
+
+function closedrop(dx,dy,did,dw,dh)
+		for py=0,dh-1 do
+		for px=0,dw-1 do
+				local m=mget(place.x+dx+px,place.y+12+dy+py) 
+				if m~=0 and m~=236 and m~=236+1 and m~=236+16 and m~=236+16+1 then
+				return false
+				end
+		end
+		end
+		for py=0,dh-1 do
+		for px=0,dw-1 do
+				mset(place.x+dx+px, place.y+12+dy+py, did+px+py*16)
+		end
+		end		
+		return true
 end
 
 function obj_exists(dx,dy,did,px,py)
@@ -2172,7 +2216,7 @@ function verb_has(id)
   return nil
 end
 
-function spawn(px,py,id,loot)
+function spawn(px,py,id,far)
   --logic for lootdropping and Planting
   
   if id==173 then return false end
@@ -2183,7 +2227,7 @@ function spawn(px,py,id,loot)
   fgx,fgy=get_green(px,py,iw,ih)
   if fgx ==nil then return false end
   
-  if loot then lootdrop(px+fgx,py+fgy,id,iw,ih)
+  if far then fardrop(px+fgx,py+fgy,id,iw,ih)
   else drop(fgx,fgy,id,iw,ih) end
 
   return true
