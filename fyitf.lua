@@ -730,7 +730,7 @@ function gameon()
 			for my=0,12-1 do
 				for mx=0,12-1 do
 					sp = mget(place.x+mx, place.y+12+my)
-					ck=0; if sp ==69 or sp ==70 or sp ==85 or sp ==86 or sp ==41+16 or sp ==117 or sp ==117+1 or sp ==117+16 or sp ==117+16+1 then ck=14 end
+					ck=0; if sp ==69 or sp ==70 or sp ==85 or sp ==86 or sp ==41+16 or sp ==117 or sp ==117+1 or sp ==117+16 or sp ==117+16+1 or sp ==160 or sp ==160+1 or sp ==160+16 or sp ==160+16+1 or sp ==160+32 or sp ==160+32+1 then ck=14 end
 					spr(sp,8+mx*8,8+my*8,ck)
 				end
 			end
@@ -886,6 +886,7 @@ function gameon()
 	while counthere()<40 do ins(flies,{x=math.random(8,8+11*8),y=math.random(8,8+11*8),r=math.random(0,3),src=placestr()}) end 
 	end
 
+	if flies then
 	for i,f in ipairs(flies) do
 			if (f.x<8 or f.x>=8*13 or f.y<8 or f.y>=8*13) then
 					f.src=placestr()
@@ -899,14 +900,15 @@ function gameon()
 			spr(137+(t*0.2)%2,f.x,f.y,14,1,0,f.r,1,1)
 			end
 	end
+	end
 	
 	t=t+1
 	mt=mt+1
 end
 
 plantstats={
-		['0,0']={total=0,bugged=true},
-		['228,0']={total=0,bugged=true},
+		--['0,0']={total=0,bugged=true},
+		--['228,0']={total=0,bugged=true},
 }
 
 function bugged(pos)
@@ -1836,6 +1838,7 @@ db={
 		[173]={w=3,h=4,canon='Henry'},
 		[250]={w=2,h=1,canon='hole'},
 		[135]={w=2,h=2,canon='carrot'},
+		[160]={w=2,h=3,canon='deer'},
 }
 
 endings={
@@ -2466,16 +2469,38 @@ function plantsites()
   for i=1,3 do
   for j,pl in ipairs(plantdat[pos]) do
     --if duck id then spawn insects
-    if count ==5 and not flags["Ps"] then
+    if count ==5 or (plantstats[pos] and plantstats[pos].total>=5) and not flags["Ps"] then
       inform_once("First came the small animals.")
-      flags["P01"]=true
+      flags["Ps"]=true
       spawn(place.x,place.y,117)
       --Ps set when the bun leaves
       --flags["Ps"]=true
       return true
+    elseif flags['Ps'] and not flags['Pm'] and (count==5 or (plantstats[pos] and plantstats[pos].total>=9)) then
+    		inform_once('Then came the medium animals.')
+						flags['Pm']=true
+						spawn(place.x,place.y,160)
+						return true
+    elseif flags['Ps'] and flags['Pm'] and (count==5 or (plantstats[pos] and plantstats[pos].total>=12)) then
+		    if not plantstats[pos] then plantstats[pos]={total=0,bugged=false} end
+    		plantstats[pos].bugged=true
+      return true
     end
     if spawn(place.x,place.y,pl.id) then
     count=count+1
+    if not plantstats[pos] then plantstats[pos]={total=0,bugged=false} end
+				plantstats[pos].total=plantstats[pos].total+1
+    else
+		    if not plantstats[pos] then plantstats[pos]={total=0,bugged=false} end
+    		plantstats[pos].bugged=true
+      return true
+    end
+    local virtual_hotspots={}
+    get_greens(pl.id,virtual_hotspots)
+    if #virtual_hotspots==0 then
+		    if not plantstats[pos] then plantstats[pos]={total=0,bugged=false} end
+    		plantstats[pos].bugged=true
+      return true
     end
   end
   end
@@ -2799,13 +2824,11 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 145:ff0fff00ff000000ff000000ff000000ff000000ff000000ff000000f0000000
 -- 151:0000999900096999000999990099999009969900099960000999000009900000
 -- 152:6900000090000000000000000000000000000000000000000000000000000000
--- 160:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
--- 161:bbbbbbbbbbbbbbbbbbbbbbbfbbbbbbffbbbbbbffbbbbbffdbbbbffddbbbbffdd
--- 162:bfff0000ffaff00ffaaafffffffaaaffdddfffddddddfdddddddfdddfdddfddd
--- 163:fff6666600ff6666000f6666ff00f6660ff0f66600f00f66000fff66f000fff6
+-- 160:eeeeee4eee4eee4e4e4ee444444e444eee4e4eeeee444eeee44044ee4444444e
+-- 161:eeeeeeeee4eeeeee44eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 -- 164:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
--- 165:00000000000000000000000f000000ff000000ff00000ff00000ff000000ff00
--- 166:0fff0000ff0ff00ff000fffffff000ff000fff000000f0000000f000f000f000
+-- 165:bbbbbbbbbbbbbbbbbbbbbbbfbbbbbbffbbbbbbffbbbbbffdbbbbffddbbbbffdd
+-- 166:bfff0000ffaff00ffaaafffffffaaaffdddfffddddddfdddddddfdddfdddfddd
 -- 167:fff6666600ff6666000f6666ff00f6660ff0f66600f00f66000fff66f000fff6
 -- 168:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 -- 169:00000000000000000000000f000000ff000000ff00000ff00000ff000000ff00
@@ -2815,13 +2838,11 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 173:00000000000000000000000f000000ff000000ff00000ffa0000ffaa0000ffaa
 -- 174:0fff0000ffaff00ffaaafffffffaaaffaaafffaaaaaafaaaaaaafaaafaaafaaa
 -- 175:fff00000aaff0000aaaf0000ffaaf000affaf000aafaaf00aaafff00faaafff0
--- 176:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
--- 177:bbbbfdddbbbbfdddbbbbffddbbbf00ffbbbf0000bbbf0000bbbf0000bbff0000
--- 178:ddddfddddddf0fdddddf0fddfff000ff00f000f60f00000f00660ff60066f666
--- 179:0000f6f60000f6f6000ff666ffff6666666666666666666f6666666f66666f66
+-- 176:4444444eeee444eeee4444eeee4444eeee4444eeee444444ee4444ffee44444f
+-- 177:eeeeeeeeeeeeeeeeeeeeee4eeeee444eee44444e4ff4444e44f444ee444444ee
 -- 180:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
--- 181:0000f0000000f0000000ff00000f00ff000f0000000f0000000f000000ff0000
--- 182:0000f000000f0f00000f0f00fff000ff00f000f60f00000f00660ff60066f666
+-- 181:bbbbfdddbbbbfdddbbbbffddbbbf00ffbbbf0000bbbf0000bbbf0000bbff0000
+-- 182:ddddfddddddf0fdddddf0fddfff000ff00f000f60f00000f00660ff60066f666
 -- 183:0000f6f60000f6f6000ff666ffff6666666666666666666f6666666f66666f66
 -- 184:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 -- 185:0000f0000000f0000000ff00000f00ff000f0000000f0000000f000000ff0000
@@ -2831,14 +2852,12 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 189:0000faaa0000faaa0000ffaa000faaff000faaaa000faaaa000faaaa00ffaaaa
 -- 190:aaaafaaaaaafafaaaaafafaafffaaaffaafaaafaafaaaaafaaffaffaaafafaaa
 -- 191:aaaafaf0aaaafaf0aaaffaa0ffffaaa0aaaaaaa0aaaaaaafaaaaaaafaaaaafaa
--- 192:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
--- 193:bbf00000bbf00000bbb60000bbb60000bbb60000bbb66000bbbb6000bbbb6006
--- 194:06666666066f6666066f666606666666066f6666666f666666666666666f6666
--- 195:6666666f6666f66f666666fb666f6fbb666fffbb66ff00fb6ff000fbfff00fbb
+-- 192:eee44444eee44444ee444eeeee444eeeee44eeeeee4440eeee4440eeee00eeee
+-- 193:44ff4eee4e4f4eee44e44eee44e44eee44e44eee44e444ee44ee44eee00e00ee
 -- 196:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
--- 197:00f0000000f00000000600000006000000060000000660000000600000006006
+-- 197:bbf00000bbf00000bbb60000bbb60000bbb60000bbb66000bbbb6000bbbb6006
 -- 198:06666666066f6666066f666606666666066f6666666f666666666666666f6666
--- 199:6666666f6666f66f666666f0666f6f00666fff0066ff00f06ff000f0fff00f00
+-- 199:6666666f6666f66f666666fb666f6fbb666fffbb66ff00fb6ff000fbfff00fbb
 -- 200:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 -- 201:00f0000000f00000000f0000000f0000000f0000000ff0000000f0000000f00f
 -- 202:0ff000000f0f00000f0f00000f0000000f0f0000ff0f0000f0000000f00f0000
@@ -2847,14 +2866,10 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 205:00faaaaa00faaaaa000faaaa000faaaa000faaaa000ffaaa0000faaa0000faaf
 -- 206:affaaaaaafafaaaaafafaaaaafaaaaaaafafaaaaffafaaaafaaaaaaafaafaaaa
 -- 207:aaaaaaafaaaafaafaaaaaaf0aaafaf00aaafff00aaffaaf0affaaaf0fffaaf00
--- 208:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
--- 209:bbbb6606bbbbb666bbbbbb66bbbbbb66bbbbb666bbbbb666bbbbb666bbbbb666
--- 210:666666ff666ffff6666ff66666666666666666f666666666666f666666f6666f
--- 211:f0fffbbbf0fffbbbfff0fbbbf0f0fbbb6f000fbb6f000fbbf0f00fbb00fffbbb
 -- 212:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
--- 213:0000660600000666000000660000006600000666000006660000066600000666
+-- 213:bbbb6606bbbbb666bbbbbb66bbbbbb66bbbbb666bbbbb666bbbbb666bbbbb666
 -- 214:666666ff666ffff6666ff66666666666666666f666666666666f666666f6666f
--- 215:f0fff000f0fff000fff0f000f0f0f0006f000f006f000f00f0f00f0000fff000
+-- 215:f0fffbbbf0fffbbbfff0fbbbf0f0fbbb6f000fbb6f000fbbf0f00fbb00fffbbb
 -- 216:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 -- 217:0000ff0f00000fff000000f0000000ff00000f0000000f0000000f0000000f00
 -- 218:000000ff000ffff00f0ff000f0000000000f00f00000f000000f000000f0000f
