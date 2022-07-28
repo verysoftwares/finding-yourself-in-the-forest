@@ -2476,12 +2476,12 @@ function plantsites()
       --Ps set when the bun leaves
       --flags["Ps"]=true
       return true
-    elseif flags['Ps'] and not flags['Pm'] and (count==5 or (plantstats[pos] and plantstats[pos].total>=9)) then
+    elseif flags['Ps'] and not flags['Pm'] and (count==5 or (plantstats[pos] and plantstats[pos].total>=7)) then
     		inform_once('Then came the medium animals.')
 						flags['Pm']=true
 						spawn(place.x,place.y,160)
 						return true
-    elseif flags['Ps'] and flags['Pm'] and (count==5 or (plantstats[pos] and plantstats[pos].total>=12)) then
+    elseif flags['Ps'] and flags['Pm'] and (count==5 or (plantstats[pos] and plantstats[pos].total>=8)) then
 		    if not plantstats[pos] then plantstats[pos]={total=0,bugged=false} end
     		plantstats[pos].bugged=true
       return true
@@ -2824,8 +2824,8 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 145:ff0fff00ff000000ff000000ff000000ff000000ff000000ff000000f0000000
 -- 151:0000999900096999000999990099999009969900099960000999000009900000
 -- 152:6900000090000000000000000000000000000000000000000000000000000000
--- 160:eeeeee4eee4eee4e4e4ee444444e444eee4e4eeeee444eeee44044ee4444444e
--- 161:eeeeeeeee4eeeeee44eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+-- 160:eeeeee9eee9eee9e9e9ee999999e999eee9e9eeeee444eeee44044ee4444444e
+-- 161:eeeeeeeee9eeeeee99eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 -- 164:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 -- 165:bbbbbbbbbbbbbbbbbbbbbbbfbbbbbbffbbbbbbffbbbbbffdbbbbffddbbbbffdd
 -- 166:bfff0000ffaff00ffaaafffffffaaaffdddfffddddddfdddddddfdddfdddfddd
