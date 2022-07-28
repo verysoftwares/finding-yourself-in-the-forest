@@ -1690,6 +1690,8 @@ inventory_verb_resolve ={
     if not plantable(cur(inventory).id) then
     inv_success=false
     inform('Any item but that one.')
+    plantdat.next=nil
+    while #hotspots>0 do rem(hotspots,#hotspots) end
     else
     inform(fmt("2) Select one of %d available spots.", #hotspots))
     focus=hotspots
@@ -2260,6 +2262,15 @@ function get_green(px,py,iw,ih)
   return nil,nil
 end
 
+function safe_plant(sx,sy,sw,sh)
+		for ssy=sy+12,sy+12+sh-1 do
+		for ssx=sx,sx+sw-1 do
+				if mget(ssx,ssy)~=0 then return false end
+		end
+		end
+		return true
+end
+
 function get_greens(id, target_tbl)
   --all hotspots for a certain-sized object
   px=place.x; py=place.y
@@ -2269,7 +2280,7 @@ function get_greens(id, target_tbl)
     for mx=0,12-1 do
       if mx+iw<=12 and my+ih<=12 then
       sp = mget(px+mx, py+my)
-      if sp ==51 and mget(px+mx, 12+py+my) ==0 then
+      if sp ==51 and safe_plant(px+mx,py+my,iw,ih) then
         if not within_planted(mx,my) then
           ins(target_tbl, {id=id,x=mx,y=my,w=iw,h=ih})
         end
@@ -2418,6 +2429,7 @@ if debug then
 		pmem(10, 0)
 end
 if debug then spawn(0,0,5); spawn(0,0,5); spawn(0,0,7) end
+if debug then sustain('Plant',6) end
 
 if pmem(10) ==1 then lore.msg=nil; flags[1]=true; flags[2]=true; flags[3]=true end
 
