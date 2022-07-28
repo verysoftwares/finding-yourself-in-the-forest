@@ -183,28 +183,6 @@ function breathe3()
 		end
 end
 
-function breathe4()
-		local freq=.88---t*.02
-		for w=0,32-1,1 do
-				freq=.88*.75--+1.5+sin(t*.001)
-				cur_smp=6+(perlin((w+mt)*.2*freq,12*9282+(w+mt)*.245*freq,12*771+(w+mt)*.1*freq)-.5)*6
-				freq=.407
-				cur_smp=cur_smp+(perlin((w+mt*.3)*.42*freq,12*92482+(w+mt)*.245*freq,12*7471+(w+mt)*.1*freq))*7
-				cur_smp=flr(cur_smp)%16
-				local addr=0xffe4*2 +2*32 +w
-				poke4(addr, cur_smp)
-		end
-		
-		if mt%(120)==0 then
-				sfx(2,
-				    -1+12*3+mt%12-mt%16,
-								120+1,
-								2,
-								0x8,
-								0)
-		end
-end
-
 function breathe7()
 		local freq=.88---t*.02
 		for w=0,32-1,1 do
@@ -434,6 +412,7 @@ function yesplacefgm()
 		end
 end
 
+breathe4=breathen(120,12,16)
 breathe5=breathen(10,20,16)
 breathe6=breathen(63,30,28)--breathen(10,20,16)--breathen(31,44,55)--breathen(44,16,40)
 
@@ -1489,10 +1468,14 @@ inventory_verb_resolve ={
       sustain("Move",4)
     end
     if item.id ==39 then --pear
+						if not flags['P'] then
       inform_multi({
         "Isn't this what you came here for?",
         "Eating a pear gave you the energy to reflect 11 thoughts."
       })
+      else
+      		inform('Eating a pear gave you the energy to reflect 11 thoughts.')
+      end
       flags["P"]=true
       sustain("Reflect",11)
     end
@@ -1541,9 +1524,10 @@ inventory_verb_resolve ={
       if closedrop(6-2,12-4,173,3,4) then
       if place.x ==0 and place.y ==24 then
         --mirror room opened 
-        inform("It pushes the plate down.") 
+        if not flags['B'] then inform("It pushes the plate down.")
         flags["B"]=true
         drop(12-3-2,12-2-2,250,2,1)
+        end
       else
       inform("It didn't fly very far.")
       end
@@ -1682,21 +1666,24 @@ inventory_verb_resolve ={
     plantdat.next=cur(inventory)
     if plantdat.next~=nil then
     get_greens(cur(inventory).id, hotspots)
-    if #hotspots==0 then
-      inv_success = false
-      inform('2) Umm, pick an area that isn\'t so full of stuff.')
-      return
-    end
-    if not plantable(cur(inventory).id) then
+    if plantable(cur(inventory).id) then
+    inform(fmt("2) Select one of %d available spots.", #hotspots))
+    focus=hotspots
+    return
+    else
     inv_success=false
     inform('Any item but that one.')
     plantdat.next=nil
     while #hotspots>0 do rem(hotspots,#hotspots) end
-    else
-    inform(fmt("2) Select one of %d available spots.", #hotspots))
-    focus=hotspots
+    return
     end
     else inv_success=false end
+    if #hotspots==0 then
+      inv_success = false
+      inform('2) Umm, pick an area that isn\'t so full of stuff.')
+    		plantdat.next=nil
+      return
+    end
   end,
 }
 
@@ -1720,6 +1707,7 @@ db={
   [236]={w=2,h=2,canon='pitchplate'},
 		[173]={w=3,h=4,canon='Henry'},
 		[250]={w=2,h=1,canon='hole'},
+		[135]={w=2,h=2,canon='carrot'},
 }
 
 endings={
@@ -1829,7 +1817,7 @@ places={
 }
 
 --game state
-debug=false
+debug=true
 place={x=0,y=0}
 --if debug then place.x=48; place.y=112 end
 verbs={"Eat",i=1}
@@ -1845,8 +1833,6 @@ init_msg2="If there are multiple items to choose from, scroll with the arrow key
 duck_msg="It falls into the water, attracting a duck curious for food."
 duck_msg2="The duck nimbly catches it and gobbles it up. They get bigger, but not too big."
 lore={i=1,msg=init_msg,long=0}
---if game has ever been reset, 
---suppress init_msgs
 focus=verbs
 t=0
 
@@ -2266,7 +2252,7 @@ end
 function safe_plant(sx,sy,sw,sh)
 		for ssy=sy+12,sy+12+sh-1 do
 		for ssx=sx,sx+sw-1 do
-				if mget(ssx,ssy)~=0 then return false end
+				if mget(ssx,ssy)~=0 --[[or mget(ssx,ssy-12)~=51]] then return false end
 		end
 		end
 		return true
@@ -2432,6 +2418,8 @@ end
 if debug then spawn(0,0,5); spawn(0,0,5); spawn(0,0,7) end
 if debug then sustain('Plant',6) end
 
+--if game has ever been reset, 
+--suppress init_msgs
 if pmem(10) ==1 then lore.msg=nil; flags[1]=true; flags[2]=true; flags[3]=true end
 
 --sustain('Climb',4)
