@@ -996,7 +996,8 @@ function bugged(pos)
 		return plantstats[pos] and plantstats[pos].bugged
 end
 
-params={'p+','p2+','p-','dt','w','(Leave)',i=1}
+params={'p+','p2+','p-','dt','w','(Load)','(Save)','(Leave)',i=1}
+presets={i=1}
 function autiotupa()
 		cls(0)
 		if focus ==params then
@@ -1004,8 +1005,81 @@ function autiotupa()
    	cycle2(params)
     if btnp(4) and params.i>5 then
     		if cur(params)=='(Leave)' then
-      		TIC=gameon; focus=verbs
+      		TIC=gameon; focus=verbs; rt=rt+(time()-r_st)
+        track({verb={'Radio','hotspot resolve'},
+               place={x=place.x,y=place.y,loop=place.loop}})
       end
+      if cur(params)=='(Load)' then
+      		focus=presets
+        inform('Load which preset?')
+      end
+      if cur(params)=='(Save)' then
+      		focus=presets
+        inform('Save to which preset slot?')
+      end
+    end
+  elseif focus ==presets then
+  		if btnp(5) then focus=params; inform(nil) end
+  		if btnp(4) then
+      if cur(params)=='(Load)' then
+      		focus=params
+        for i=0,4 do
+										paramsus[params[i+1]]=pmem(255-60+((presets.i-1)*5)+i)
+        end
+        inform(fmt('Loaded preset %.2d.',presets.i))
+        mt=0
+      end
+      if cur(params)=='(Save)' then
+      		if not flags['Cf'] then
+										if pmem(255-60+((presets.i-1)*5))>0 then
+												inform(fmt('Overwrite preset %.2d? Z for yes, X for no.',presets.i))
+												flags['Cf']=true
+										else
+												for i=0,4 do
+														pmem(255-60+((presets.i-1)*5)+i, paramsus[params[i+1]])
+												end
+												inform(fmt('Data saved to preset %.2d.',presets.i))
+												focus=params
+										end
+								else
+										for i=0,4 do
+												pmem(255-60+((presets.i-1)*5)+i, paramsus[params[i+1]])
+										end
+										flags['Cf']=nil
+										inform(fmt('Overwritten preset %.2d.',presets.i))
+										focus=params
+								end
+      end
+    end
+    if flags['Cf'] and btnp(5) then
+    		inform('Data not saved.')
+    		focus=params
+      flags['Cf']=nil
+    end
+    if cur(params)~='(Save)' then
+  		if btnp(0) and not flags['Cf'] then 
+    		presets.i=presets.i-1
+      while pmem(255-60+(presets.i-1)*5)==0 do
+		    		presets.i=presets.i-1
+		      if presets.i<1 then presets.i=12 end
+      end
+    end
+  		if btnp(1) and not flags['Cf'] then 
+    		presets.i=presets.i+1
+      while pmem(255-60+(presets.i-1)*5)==0 do
+		    		presets.i=presets.i+1
+		      if presets.i>12 then presets.i=1 end
+      end
+    end
+    else
+  		if btnp(0) and not flags['Cf'] then 
+    		presets.i=presets.i-1
+		    if presets.i<1 then presets.i=12 end
+    end
+    if btnp(1) and not flags['Cf'] then 
+    		presets.i=presets.i+1
+		    if presets.i>12 then presets.i=1 end
+    end
     end
   end
 
@@ -1044,6 +1118,19 @@ function autiotupa()
 				--if we go overboard, increment column..
 			end
 		
+				borders(tx+8*10-8,0,8*6,8+12*8+8,8)
+			for i=0,12-1 do
+					if pmem(255-60+i*5)>0 then
+							local col=8
+							if focus==presets and i+1==presets.i then col=15 end
+							print(fmt('Preset %.2d',i+1),tx+8*10-8+8,8+i*8,col,false,1,true)
+					end
+					if cur(params)=='(Save)' and focus==presets then
+							print(fmt('Preset %.2d',presets.i),tx+8*10-8+8,8+(presets.i-1)*8,15,false,1,true)
+					end
+			end
+
+
 		lorespam(function() focus=params end)
 		
 		-- listen to the radio
@@ -1076,7 +1163,9 @@ function postgame()
       cls(0)
       clip()
       borders(pg_screens.camx+camw+0,8,8*8,8+8+8,11)
-      print(scr.verb,pg_screens.camx+camw+8,8+8,verbdat[scr.verb].col)
+      local col=2
+      if verbdat[scr.verb] then col=verbdat[scr.verb].col end
+      print(scr.verb,pg_screens.camx+camw+8,8+8,col)
       --if i<#pg_screens then
       scrx=scrx+8*8
       camw=camw+8*8
@@ -1199,7 +1288,24 @@ function highlight(info)
     local arg=info.verb[3]
     if cntx=='hotspot resolve' then
       -- if is first occurence in pmem and..
-						local narrator_say ={fmt('On this run, you first learned to %s here.',verb)}
+						local narrator_say={}
+						if verb~='Radio' and verb~='Retry' then ins(narrator_say,fmt('On this run, you first learned to %s here.',verb))
+						elseif verb=='Retry' then ins(narrator_say,'Finally, you ran out of possible actions here.')
+						elseif verb=='Radio' then 
+						ins(narrator_say,'You then listened to the radio.')
+						if flr(rt/(1000*60*60))==0 then
+								ins(narrator_say,fmt('Total time spent listening: %.2d minutes and %.2d seconds.',flr(rt/(1000*60))%60,flr(rt/1000)%60))
+								if math.floor(rt/(1000*60))%60>=15 then
+										ins(narrator_say,'You must\'ve enjoyed it very much.')
+								end
+								if math.floor(rt/(1000*60))%60<=2 then
+										ins(narrator_say,'It\'s unfortunate it couldn\'t hold your interest any longer.')
+								end
+						else
+								ins(narrator_say,fmt('Total time spent listening: %.2d hours, %.2d minutes and %.2d seconds!',flr(rt/(1000*60*60)),flr(rt/(1000*60))%60,flr(rt/1000)%60))
+								ins(narrator_say,'...I think you may have a problem.')
+						end
+						end
 						--[[for i=#tracker,1,-1 do
 								local tr=tracker[i]
 								if tr.verb and tr.verb[1]==verb then
@@ -1487,6 +1593,7 @@ hotspot_verb_resolve ={
     if hspot.nextx==204 and hspot.nexty==112-24 then
     		TIC=autiotupa
       inform_multi({'There\'s a radio here. By twiddling knobs (with the left and right keys), you can listen to mysterious broadcasts.'})
+      r_st=time()
     elseif (place.x==228 and place.y==112) or (hspot.nextx==228 and hspot.nexty==112) then
     		inform_once('Every journey begins from the first step.')
       if not place.loop then if place.x==204 and place.y==112 then place.loop=1 else place.loop=12 end; place.x=hspot.nextx; place.y=hspot.nexty
@@ -1628,6 +1735,13 @@ select_verb ={
     if place.x ==0 and place.y ==24 then make_thought(4) end
     if place.x ==24 and place.y ==24 then make_thought(6) end
     if place.x ==48 and place.y ==112 then make_thought(8) end
+				
+				if place.x==204 and place.y==112 then make_thought(9) end
+
+				if place.x==228 and place.y==112 then
+						inform('You are too focused on walking to think straight.')
+						return
+				end
 
     -- split: ending_reflect    
     if place.x ==12 and place.y ==24+24 then
@@ -1902,6 +2016,9 @@ inventory_verb_resolve ={
     --something new falls down at place 0,0?
     --no, just a regular banana.. makes more sense since there is already one.
     if place.x ==0 and place.y ==0 then
+      if flags['Bn'] then
+      inform("It hit a tree, but nothing more fell down.")
+      else
       inform("It hit a tree, and a banana fell down.")
       if obj_exists(8,8,5) then 
         --foreshadow multitext
@@ -1920,8 +2037,9 @@ inventory_verb_resolve ={
         --good job, this counts as a positive reflection.
         thoughts.read["F"]=2
       end
-      drop(8,8,5,2,2)          
-
+      drop(8,8,5,2,2)
+      flags['Bn']=true
+						end
     end
     if place.x ==12 and place.y ==0 then
       inform("It hit a tree, and an acorn fell down.")
@@ -2112,6 +2230,10 @@ thoughts={
     "It was years ago that someone noted you're balding, and you still wear a hat everywhere.",
     "The ways in which your impermanent body crumbles haven't prevented you from developing an authentic life.",
   },
+  {
+  	 'Coming here was such a tedious walk, and all that\'s here is a creepy old cottage.',
+    'You feel refreshed after a long walk through the forest, and excited about what the cottage holds.',
+  },
   --[[
   "You're shocked by the weight of having to be alive one year from now.",
   "It was years ago that someone noted you're balding, and you still wear a hat everywhere.",
@@ -2137,7 +2259,7 @@ places={
 }
 
 --game state
-debug=false
+debug=true
 place={x=0,y=0}
 --if debug then place.x=48; place.y=112 end
 verbs={"Eat",i=1}
@@ -2154,7 +2276,28 @@ duck_msg="It falls into the water, attracting a mallard curious for food."
 duck_msg2="The mallard nimbly catches it and gobbles it up. They get bigger, but not too big."
 lore={i=1,msg=init_msg,long=0}
 focus=verbs
-t=0; mt=0
+t=0; mt=0; rt=0
+
+-- radio presets
+if pmem(255-60)==0 then
+		pmem(255-60+0, 6)
+		pmem(255-60+1, 35)
+		pmem(255-60+2, 7)
+		pmem(255-60+3, 41)
+		pmem(255-60+4, 2)
+
+		pmem(255-60+5+0, 9)
+		pmem(255-60+5+1, 8)
+		pmem(255-60+5+2, 1)
+		pmem(255-60+5+3, 3)
+		pmem(255-60+5+4, 1)
+
+		pmem(255-60+10+0, 1)
+		pmem(255-60+10+1, 14)
+		pmem(255-60+10+2, 7)
+		pmem(255-60+10+3, 32)
+		pmem(255-60+10+4, 3)		
+end
 
 --asdf test
 --sustain("Plant",5)
@@ -2804,6 +2947,7 @@ if debug then
 	-- keep tutorial regardless of
 	-- cartridge changes.
 		pmem(10, 0)
+		pmem(20, 1)
 		--for i=0,6-1 do
 		--		pmem(20+i,0)
 		--end
@@ -2823,7 +2967,7 @@ if pmem(10) ==1 then lore.msg=nil; flags[1]=true; flags[2]=true; flags[3]=true e
 
 -- run game.
 		TIC=titlescr
---if debug then TIC=autiotupa; focus=params end
+if debug then TIC=autiotupa; focus=params; r_st=time() end
 --if debug then place.x=228; place.y=112; place.loop=12 end
 
 --sustain('Climb',4)
@@ -3190,7 +3334,7 @@ suddensndfgm= '524946463482090057415645666d7420100000000100010022560000225600000
 -- 088:3377773337777730777777307777773077777730777777307777773077777730
 -- 089:0003000300330000003000000300000333300003333000033003003030003030
 -- 090:3330003003000033333000033030000300030030000333300000330000000300
--- 091:0003777700337777333037773000377733003777030037770300377703303777
+-- 091:0003777700337777333037773000377733003777030037770300377700303777
 -- 096:7730003377300030773300307773030077773300777733007777733077777773
 -- 097:3000003003300300003303000003330000033000000033000000333033003030
 -- 098:0030030300333000000330030003300300033337000333770003777703377777
