@@ -718,7 +718,7 @@ function gameon()
 					--banana tree, save me
 					if softlock and place.x ==0 and place.y ==0 then
 							--well, i could still throw something.
-							if verb_has("Throw") then
+							if (verb_has("Throw") or inv_has(69)) and not flags['Bn'] then
 									local function legitthrow()
 											for i,v in ipairs(inventory) do
 													if v.id~=173 and v.id~=25 then return true end
@@ -1015,7 +1015,7 @@ function autiotupa()
       end
       if cur(params)=='(Save)' then
       		focus=presets
-        inform('Save to which preset slot?')
+        inform('Save to which of 12 preset slots?')
       end
     end
   elseif focus ==presets then
@@ -2259,7 +2259,7 @@ places={
 }
 
 --game state
-debug=true
+debug=false
 place={x=0,y=0}
 --if debug then place.x=48; place.y=112 end
 verbs={"Eat",i=1}
@@ -2891,7 +2891,7 @@ function lorespam(postlore)
      lw=print(sub(lore.msg,char,char),lx,ly+lore.long,
               8+(t*0.1*0.4+char*0.1)%8,false,1,true)
      lx=lx+lw
-     if lx>=240-8-3 then 
+     if lx>=240-8-3 and not (sub(lore.msg,char,char) =='.') and not (sub(lore.msg,char+1,char+1) =='.') then 
        if not (sub(lore.msg,char,char) ==" ") and not (sub(lore.msg,char+1,char+1) ==" ") then 
          print("-",lx,ly+lore.long,
                8+(t*0.1*0.4+(char+1)*0.1)%8,false,1,true) 
